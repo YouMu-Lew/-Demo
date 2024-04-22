@@ -27,6 +27,12 @@ export default class GameScene extends cc.Component {
     @property(cc.Node)
     successNode: cc.Node = null;
 
+    @property(cc.Node)
+    toSeclectedNode: cc.Node = null;
+
+    @property(cc.Node)
+    toNotSeclectedNode: cc.Node = null;
+
     // board size
     // public xSize: number = 8;
     // public ySize: number = 8;
@@ -37,6 +43,7 @@ export default class GameScene extends cc.Component {
     // private curData = new Array(globalConfig.boardSizeX * globalConfig.boardSizeY);       // 当前棋盘数据
 
     onLoad() {
+        this.init();
         this.initBoardData();
         console.log(globalConfig.targetData);
         console.log(globalConfig.curData);
@@ -49,6 +56,32 @@ export default class GameScene extends cc.Component {
     }
 
     // update (dt) {}
+
+    protected onDestroy(): void {
+        this.toSeclectedNode.off(cc.Node.EventType.TOUCH_START, this.toSec, this);
+        this.toNotSeclectedNode.off(cc.Node.EventType.TOUCH_START, this.toNotSec, this);
+    }
+
+    init() {
+        this.toSeclectedNode.on(cc.Node.EventType.TOUCH_START, this.toSec, this);
+        this.toNotSeclectedNode.on(cc.Node.EventType.TOUCH_START, this.toNotSec, this);
+    }
+
+    toSec() {
+        if (gc.curClickType == gridType.SELECTED)
+            return;
+        gc.curClickType = gridType.SELECTED;
+        this.toSeclectedNode.opacity = 255;
+        this.toNotSeclectedNode.opacity = 50;
+    }
+
+    toNotSec() {
+        if (gc.curClickType == gridType.NOT_SELECTED)
+            return;
+        gc.curClickType = gridType.NOT_SELECTED;
+        this.toSeclectedNode.opacity = 50;
+        this.toNotSeclectedNode.opacity = 255;
+    }
 
     initBoard() {
         let oneWidth = this.board.width / globalConfig.boardSizeX;
@@ -91,11 +124,12 @@ export default class GameScene extends cc.Component {
     }
 
     setOneGridInBoard(x: number, y: number, gt: gridType) {
-        if (gt == gridType.NONE)
-            globalConfig.curData[globalConfig.boardSizeX * y + x] = 0;
 
-        else
-            globalConfig.curData[globalConfig.boardSizeX * y + x] = gt;
+        // if (gt == gridType.NONE)
+        //     globalConfig.curData[globalConfig.boardSizeX * y + x] = 0;
+
+        // else
+        //     globalConfig.curData[globalConfig.boardSizeX * y + x] = gt;
         console.log(globalConfig.curData);
         this.isPass();
     }

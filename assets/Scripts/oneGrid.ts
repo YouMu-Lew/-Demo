@@ -1,4 +1,4 @@
-import { gridType } from "./globalConfig";
+import { globalConfig, gridType } from "./globalConfig";
 
 const { ccclass, property } = cc._decorator;
 
@@ -21,7 +21,7 @@ export default class oneGrid extends cc.Component {
 
     onLoad() {
         this.node.on(cc.Node.EventType.TOUCH_START, () => {
-            this.onClick(gridType.SELECTED);
+            this.onClick(globalConfig.curClickType);
         }, this);
         //TODO 手指按住滑动，实现多个连续点击的效果
     }
@@ -40,6 +40,11 @@ export default class oneGrid extends cc.Component {
             this.setMyType(clickType);
         else if (this.myType == clickType)
             this.setMyType(gridType.NONE);
+
+        if (this.myType == gridType.SELECTED)
+            globalConfig.curData[globalConfig.boardSizeX * this.myY + this.myX] = 1;
+        else
+            globalConfig.curData[globalConfig.boardSizeX * this.myY + this.myX] = 0;
     }
 
     private setMyType(gt: gridType) {

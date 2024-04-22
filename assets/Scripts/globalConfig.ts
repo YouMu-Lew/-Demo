@@ -13,4 +13,5 @@ export namespace globalConfig {
     export let targetData: Array<number>;    // 目标棋盘数据
 
     export let curData: Array<number>;     // 当前棋盘数据
+    export let curClickType: gridType = gridType.SELECTED;
 }
