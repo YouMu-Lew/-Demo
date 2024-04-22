@@ -24,6 +24,9 @@ export default class GameScene extends cc.Component {
     @property(cc.Prefab)
     tipPrefab: cc.Prefab = null;
 
+    @property(cc.Node)
+    successNode: cc.Node = null;
+
     // board size
     // public xSize: number = 8;
     // public ySize: number = 8;
@@ -56,11 +59,12 @@ export default class GameScene extends cc.Component {
             for (; j < globalConfig.boardSizeY; j++) {
                 let og = cc.instantiate(this.oneGrid);
                 og.setParent(this.board);
-                // og.width = oneWidth;
                 og.setContentSize(oneWidth, oneHeight);
                 og.setPosition(i * oneWidth, -j * oneHeight);
+                let com = og.getComponent(oneGrid);
+                com.init(i, j);
                 og.on(cc.Node.EventType.TOUCH_START, () => {
-                    this.setOneGridInBoard(i, j, og.getComponent(oneGrid).getMyType());
+                    this.setOneGridInBoard(com.myX, com.myY, com.getMyType());
                 }, this);
             }
         }
@@ -87,12 +91,13 @@ export default class GameScene extends cc.Component {
     }
 
     setOneGridInBoard(x: number, y: number, gt: gridType) {
-        if (gt == gridType.NONE) {
-            console.error("错误的类型设置");
-            return;
-        }
-        globalConfig.curData[globalConfig.boardSizeX * y + x] = gt;
+        if (gt == gridType.NONE)
+            globalConfig.curData[globalConfig.boardSizeX * y + x] = 0;
+
+        else
+            globalConfig.curData[globalConfig.boardSizeX * y + x] = gt;
         console.log(globalConfig.curData);
+        this.isPass();
     }
 
     initTips() {
@@ -106,5 +111,19 @@ export default class GameScene extends cc.Component {
             this.leftTips.addChild(tempTip);
             tempTip.getComponent(Tip).init(-1, j);
         }
+    }
+
+    // 是否过关
+    isPass() {
+        for (let i = 0; i < gc.targetData.length; i++) {
+            if (gc.targetData[i] != gc.curData[i])
+                return;
+        }
+        this.success();
+    }
+
+    success() {
+        console.log("通关");
+        this.successNode.active = true;
     }
 }

@@ -39,31 +39,45 @@ export default class Tip extends cc.Component {
     }
 
     updateTip() {
-        if (this.x == -1) {
-            // 行提示
-            let startIndex = this.y * gc.boardSizeX;
-            let tipNums: number[] = [];
-            let n = 0;//用于存储连续块的数量
-            for (let i = 0; i < gc.boardSizeX; i++) {
-                if (gc.targetData[startIndex] == 1)
-                    n++;
-                else if (n != 0) {
-                    tipNums.push(n);
-                    n = 0;
-                }
-                startIndex++;
-            }
-            if (n != 0)
+        // if (this.x == -1) {
+        // 行提示
+
+        let startIndex: number;
+        if (this.x == -1)
+            startIndex = this.y * gc.boardSizeX;
+        else
+            startIndex = this.x;
+
+        let tipNums: number[] = [];
+        let n = 0;//用于存储连续块的数量
+        for (let i = 0; i < gc.boardSizeX; i++) {
+            if (gc.targetData[startIndex] == 1)
+                n++;
+            else if (n != 0) {
                 tipNums.push(n);
-            if (tipNums.length == 0) {
-                this.label.string = "0";
-                return;
+                n = 0;
             }
-            let str = "";
-            tipNums.forEach((num) => {
-                str += (num.toString() + " ");
-            });
-            this.label.string = str;
+            if (this.x == -1)
+                startIndex++;
+            else
+                startIndex += gc.boardSizeX;
         }
+        if (n != 0)
+            tipNums.push(n);
+        if (tipNums.length == 0) {
+            this.label.string = "0";
+            return;
+        }
+        let str = "";
+        let space = "";
+        if (this.x == -1)
+            space = " ";
+        else
+            space = "\n";
+        tipNums.forEach((num) => {
+            str += (num.toString() + space);
+        });
+        this.label.string = str;
+        // }
     }
 }

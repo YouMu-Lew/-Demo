@@ -16,8 +16,8 @@ export default class oneGrid extends cc.Component {
 
     private myType = gridType.NONE
 
-    private myX: number = 0;
-    private myY: number = 0;
+    myX: number = 0;
+    myY: number = 0;
 
     onLoad() {
         this.node.on(cc.Node.EventType.TOUCH_START, () => {
@@ -28,6 +28,11 @@ export default class oneGrid extends cc.Component {
 
     start() {
 
+    }
+
+    init(x: number, y: number) {
+        this.myX = x;
+        this.myY = y;
     }
 
     onClick(clickType: gridType) {
