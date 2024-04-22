@@ -1,3 +1,4 @@
+import { globalConfig } from "./globalConfig";
 import levelBtn from "./levelBtn";
 
 const { ccclass, property } = cc._decorator;
@@ -10,10 +11,18 @@ export default class LevelsMap extends cc.Component {
     @property(cc.Node)
     levelBtns: cc.Node = null;
 
+    @property(cc.Node)
+    info: cc.Node = null;
+
+    @property(cc.Label)
+    infoLabel: cc.Label = null;
+
     @property(cc.Prefab)
     levelBtnPrefab: cc.Prefab = null;
 
-    onLoad() { }
+    onLoad() {
+        this.info.active = false;
+    }
 
     start() {
         this.initLevelsBtns();
@@ -21,26 +30,14 @@ export default class LevelsMap extends cc.Component {
 
     initLevelsBtns() {
         let i: number = 0;
-        let pic: cc.SpriteFrame = null;
-        let json: cc.JsonAsset = null;
+        // let pic: cc.SpriteFrame = null;
+        // let json: cc.JsonAsset = null;
         let fileName = "";
-        let path = "";
         let btnNode = null;
         while (i < 105) {
             fileName = filePrefix + i.toString();
-            path = "imgs_101/" + fileName;
             btnNode = cc.instantiate(this.levelBtnPrefab);
-
-            cc.resources.load(path, cc.SpriteFrame, (err, sf) => {
-                // btnNode.getComponent(cc.Sprite).SpriteFrame = sf;
-                btnNode.getComponent(levelBtn).setIcon(sf);
-            });
-
-            cc.resources.load("config/imps_101/" + fileName, (err, jsonAsset: cc.JsonAsset) => {
-                // json = jsonAsset;
-                btnNode.getComponent(levelBtn).parseJson(jsonAsset);
-                // console.log(jsonAsset);
-            });
+            btnNode.getComponent(levelBtn).init(fileName);
 
             // if (btnNode.getComponent(levelBtn).getIcon() == null) {
             //     console.error("读取图片失败：" + fileName);
@@ -52,12 +49,26 @@ export default class LevelsMap extends cc.Component {
             // }
             // this.levelBtns.addChild(btnNode);
             btnNode.setParent(this.levelBtns);
+            btnNode.on(cc.Node.EventType.TOUCH_END, this.showInfo, this);
 
-            console.log("成功加载图片和json资源：" + fileName);
+            // console.log("成功加载图片和json资源：" + fileName);
 
             i++;
         }
     }
 
     // update (dt) {}
+
+    showInfo() {
+        this.info.active = true;
+        this.infoLabel.string = globalConfig.boardSizeX.toString();
+    }
+
+    onBackBtn() {
+        this.info.active = false;
+    }
+
+    onStartBtn() {
+        cc.director.loadScene("GameScene");
+    }
 }
